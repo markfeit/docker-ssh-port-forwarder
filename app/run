@@ -1,0 +1,37 @@
+#!/bin/sh -e
+
+SSH=/etc/ssh
+SSH_CONFIG=${SSH}/ssh_config
+
+
+# Look for the configuration
+
+if [ ! -r "${SSH_CONFIG}" ]
+then
+    echo "Unable to find SSH configuration (expected at ${SSH_CONFIG})" 1>&2
+    exit 1
+fi
+
+
+# Figure out the destination
+
+DEST=${DEST:-$(awk '$1 == "Host" { print $2; exit }' "${SSH_CONFIG}")}
+case "${DEST}" in
+    \*)
+	echo "Using defalt in SSH configuration" 1>&2
+	DEST=default
+	;;
+    "")
+	echo "No Host entry found in SSH configuration." 1>&2
+	exit 1
+	;;
+esac
+
+
+# Run the application
+
+echo "SSH to ${DEST}" 1>&2
+
+cd "${SSH}" \
+   && ssh -N "${DEST}" 1>&2 \
+    || echo "SSH exited $?" 1>&2

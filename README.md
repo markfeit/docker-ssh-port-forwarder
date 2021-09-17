@@ -1,5 +1,3 @@
-# Generic Docker Template
-
 # SSH Port Forwarder for Docker
 
 ## Preparation
